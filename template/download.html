@@ -1,0 +1,22 @@
+{{ define "download" }}
+{{ template "base" . }}
+{{ block "title" . }}Download File{{ end }}
+
+{{ block "content" . }}
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Download File</h2>
+    <form action="/api/download" method="POST">
+      <div class="mb-3">
+        <label for="hashcode" class="form-label">Enter Hash Code</label>
+        <input class="form-control" type="text" id="hashcode" name="hashcode" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Download</button>
+    </form>
+    {{ if .Message }}
+    <div class="alert alert-info mt-3">{{ .Message }}</div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+{{ end }}

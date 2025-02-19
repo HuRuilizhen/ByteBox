@@ -1,0 +1,22 @@
+{{ define "upload" }}
+{{ template "base" . }}
+{{ block "title" . }}Upload File{{ end }}
+
+{{ block "content" . }}
+<div class="card">
+  <div class="card-body">
+    <h2 class="card-title">Upload File</h2>
+    <form action="/api/upload" method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="file" class="form-label">Choose a file</label>
+        <input class="form-control" type="file" id="file" name="file" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    {{ if .Message }}
+    <div class="alert alert-info mt-3">{{ .Message }}</div>
+    {{ end }}
+  </div>
+</div>
+{{ end }}
+{{ end }}
