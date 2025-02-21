@@ -45,7 +45,8 @@ func GetServerInstance() *http.Server {
 			Addr:           serverConfigInstance.addrIp + ":" + serverConfigInstance.addrPort,
 			MaxHeaderBytes: serverConfig.maxHeaderByte,
 			ReadTimeout:    serverConfig.readTimeout,
-			WriteTimeout:   serverConfig.writeTimout}
+			WriteTimeout:   serverConfig.writeTimout,
+		}
 	})
 	return serverInstance
 }
@@ -101,5 +102,4 @@ func LogServerStartUpInfo() {
 	for _, localAreaNetIp := range localAreaNetIps {
 		loggerInstance.Info(fmt.Sprintf("server listen at %s%s:%s", protocol, localAreaNetIp, port))
 	}
-
 }
