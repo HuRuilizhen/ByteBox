@@ -7,7 +7,7 @@
     <div class="card" style="width: 500px;">
         <div class="card-body">
             <h2 class="card-title text-center">Download File</h2>
-            <form action="/api/download" method="POST">
+            <form id="download-form">
                 <div class="mb-3">
                     <label for="hashcode" class="form-label text-center">Enter Hash Code</label>
                     <input class="form-control" type="text" id="hashcode" name="hashcode" required
@@ -18,11 +18,51 @@
                     <span style="font-size: 1.2rem; color: white;">Confirm</span>
                 </button>
             </form>
-            {{ if .Message }}
-            <div class="alert alert-info mt-3 text-center" style="border-radius: 1rem;">{{ .Message }}</div>
-            {{ end }}
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('download-form').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        fetch('/api/download', {
+            method: 'POST',
+            body: formData,
+            headers: {
+            }
+        })
+            .then(response => {
+                if (response.ok && response.headers.get('Content-Type') === 'application/octet-stream') {
+                    const contentDisposition = response.headers.get('Content-Disposition');
+                    let fileName = "default_filename";
+                    if (contentDisposition) {
+                        const regex = /filename="([^"]+)"/i;
+                        const match = regex.exec(contentDisposition);
+                        if (match && match[1]) {
+                            fileName = decodeURIComponent(match[1].trim());
+                        }
+                    }
+                    return response.blob().then(blob => ({ blob, fileName }));
+                } else {
+                    return response.json().then(data => { throw new Error(data.message); });
+                }
+            })
+            .then(({ blob, fileName }) => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+    });
+</script>
 {{ end }}
 {{ end }}
