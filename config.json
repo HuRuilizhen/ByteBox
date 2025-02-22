@@ -1,0 +1,22 @@
+{
+    "logger": {
+        "prefix": "",
+        "logLevel": 1
+    },
+    "server": {
+        "hostIp": "0.0.0.0",
+        "hostPort": "4001",
+        "maxHeaderMegabytes": 10,
+        "readTimeoutSeconds": 10,
+        "writeTimeoutSeconds": 10
+    },
+    "database": {
+        "workDirName": "~/.bytebox",
+        "databaseDirName": "db",
+        "databaseName": "bytebox.db"
+    },
+    "apihandler": {
+        "workDirName": "~/.bytebox",
+        "storageDirName": "storage"
+    }
+}

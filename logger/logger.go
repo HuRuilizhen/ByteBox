@@ -1,6 +1,7 @@
 package logger
 
 import (
+	"bytebox/configparser"
 	"fmt"
 	"os"
 	"sync"
@@ -32,6 +33,14 @@ func newLogger(prefix string, logLevel LogLevel) *Logger {
 		prefix:   prefix,
 		logLevel: logLevel,
 	}
+}
+
+func LoadLoggerConfig() {
+	once.Do(func() {
+		prefix := configparser.GetConfigInstance()["logger"].(map[string]interface{})["prefix"].(string)
+		logLevel := configparser.GetConfigInstance()["logger"].(map[string]interface{})["logLevel"].(float64)
+		instance = newLogger(prefix, LogLevel(logLevel))
+	})
 }
 
 func GetLoggerInstance() *Logger {
@@ -66,20 +75,41 @@ func (logger *Logger) Debug(msg string) {
 	logger.log(DEBUG, msg)
 }
 
+func (logger *Logger) Debugf(msg string, args ...interface{}) {
+	logger.log(DEBUG, fmt.Sprintf(msg, args...))
+}
+
 func (logger *Logger) Info(msg string) {
 	logger.log(INFO, msg)
+}
+
+func (logger *Logger) Infof(msg string, args ...interface{}) {
+	logger.log(INFO, fmt.Sprintf(msg, args...))
 }
 
 func (logger *Logger) Warn(msg string) {
 	logger.log(WARN, msg)
 }
 
+func (logger *Logger) Warnf(msg string, args ...interface{}) {
+	logger.log(WARN, fmt.Sprintf(msg, args...))
+}
+
 func (logger *Logger) Error(msg string) {
 	logger.log(ERROR, msg)
 }
 
+func (logger *Logger) Errorf(msg string, args ...interface{}) {
+	logger.log(ERROR, fmt.Sprintf(msg, args...))
+}
+
 func (logger *Logger) Fatal(msg string) {
 	logger.log(FATAL, msg)
+	os.Exit(1)
+}
+
+func (logger *Logger) Fatalf(msg string, args ...interface{}) {
+	logger.log(FATAL, fmt.Sprintf(msg, args...))
 	os.Exit(1)
 }
 
@@ -93,4 +123,12 @@ func (logger *Logger) GetLogLevel() LogLevel {
 
 func (logger *Logger) GetLogLevelString() string {
 	return convertString(logger.logLevel)
+}
+
+func (logger *Logger) SetPrefix(prefix string) {
+	logger.prefix = prefix
+}
+
+func (logger *Logger) GetPrefix() string {
+	return logger.prefix
 }

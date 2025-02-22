@@ -1,10 +1,12 @@
 package database
 
 import (
+	"bytebox/configparser"
 	"bytebox/logger"
 	"fmt"
 	"os"
 	"path"
+	"strings"
 	"sync"
 
 	"gorm.io/driver/sqlite"
@@ -29,13 +31,14 @@ func getUserWorkDir(workDirName string) (string, error) {
 		return "", err
 	}
 
-	workDir := path.Join(homeDir, workDirName)
-	if err := os.MkdirAll(workDir, 0755); err != nil {
-		loggerInstance.Error(fmt.Sprintf("get user work dir %s failed", workDir))
-		return "", err
+	if workDirName == "" {
+		workDirName = "~"
+	}
+	if !strings.Contains(workDirName, "~") {
+		workDirName = strings.Replace(workDirName, "~", homeDir, 1)
 	}
 
-	return workDir, nil
+	return workDirName, nil
 }
 
 func getDatabaseFile(workDirName string, databaseDirName string, databaseName string) (string, error) {
@@ -122,11 +125,20 @@ var (
 
 func GetDatabaseConfigInstance() DatabaseConfig {
 	databaseConfigInstanceOnce.Do(func() {
-		databaseConfigInstance.workDirName = "bytebox"
+		databaseConfigInstance.workDirName = ".temp"
 		databaseConfigInstance.databaseDirName = "db"
-		databaseConfigInstance.databaseName = "bytebox.db"
+		databaseConfigInstance.databaseName = "database.db"
 	})
 	return databaseConfigInstance
+}
+
+func LoadDatabaseConfig() {
+	databaseConfigInstanceOnce.Do(func() {
+		configInstance := configparser.GetConfigInstance()
+		databaseConfigInstance.workDirName = configInstance["database"].(map[string]interface{})["workDirName"].(string)
+		databaseConfigInstance.databaseDirName = configInstance["database"].(map[string]interface{})["databaseDirName"].(string)
+		databaseConfigInstance.databaseName = configInstance["database"].(map[string]interface{})["databaseName"].(string)
+	})
 }
 
 func (databaseConfig *DatabaseConfig) SetWorkDirName(workDirName string) {
