@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytebox/configparser"
 	"bytebox/logger"
 	"fmt"
 	"net"
@@ -36,6 +37,21 @@ func GetServerConfigInstance() ServerConfig {
 		serverConfigInstance.writeTimout = 10 * time.Second
 	})
 	return serverConfigInstance
+}
+
+func LoadServerConfig() {
+	serverConfigInstanceOnce.Do(func() {
+		hostIp := configparser.GetConfigInstance()["server"].(map[string]interface{})["hostIp"].(string)
+		hostPort := configparser.GetConfigInstance()["server"].(map[string]interface{})["hostPort"].(string)
+		maxHeaderByte := int(configparser.GetConfigInstance()["server"].(map[string]interface{})["maxHeaderMegabytes"].(float64)) << 20
+		readTimeout := time.Duration(configparser.GetConfigInstance()["server"].(map[string]interface{})["readTimeoutSeconds"].(float64)) * time.Second
+		writeTimout := time.Duration(configparser.GetConfigInstance()["server"].(map[string]interface{})["writeTimeoutSeconds"].(float64)) * time.Second
+		serverConfigInstance.addrIp = hostIp
+		serverConfigInstance.addrPort = hostPort
+		serverConfigInstance.maxHeaderByte = maxHeaderByte
+		serverConfigInstance.readTimeout = readTimeout
+		serverConfigInstance.writeTimout = writeTimout
+	})
 }
 
 func GetServerInstance() *http.Server {

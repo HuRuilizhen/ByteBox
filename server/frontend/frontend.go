@@ -2,14 +2,14 @@ package frontend
 
 import (
 	"bytebox/logger"
-	"bytebox/server/midlleware"
+	"bytebox/server/middleware"
 	"fmt"
 	"html/template"
 	"net/http"
 	"path/filepath"
 )
 
-func renderTemplate(responseWriter http.ResponseWriter, templateName string) {
+func RenderTemplate(responseWriter http.ResponseWriter, templateName string, data map[string]interface{}) {
 	tmpl, err := template.ParseFiles(
 		filepath.Join("template", "base.html"),
 		filepath.Join("template", templateName),
@@ -21,7 +21,7 @@ func renderTemplate(responseWriter http.ResponseWriter, templateName string) {
 		return
 	}
 
-	if err = tmpl.ExecuteTemplate(responseWriter, "base.html", nil); err != nil {
+	if err = tmpl.ExecuteTemplate(responseWriter, "base.html", data); err != nil {
 		http.Error(responseWriter, err.Error(), http.StatusInternalServerError)
 		logger := logger.GetLoggerInstance()
 		logger.Error(fmt.Sprintf("error executing template: %s", err))
@@ -30,7 +30,7 @@ func renderTemplate(responseWriter http.ResponseWriter, templateName string) {
 
 func MakeTemplateHandler(templateName string) http.HandlerFunc {
 	return func(responseWriter http.ResponseWriter, request *http.Request) {
-		renderTemplate(responseWriter, templateName)
+		RenderTemplate(responseWriter, templateName, nil)
 	}
 }
 
