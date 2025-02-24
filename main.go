@@ -24,6 +24,7 @@ func main() {
 	frontend.TemplateRouteRegister("/", "upload.html")
 	frontend.TemplateRouteRegister("/upload", "upload.html")
 	frontend.TemplateRouteRegister("/download", "download.html")
+	frontend.TemplateRouteRegister("/history", "history.html")
 
 	server.LogServerStartUpInfo()
 	serverInstance := server.GetServerInstance()

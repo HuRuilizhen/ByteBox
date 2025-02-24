@@ -1,0 +1,91 @@
+{{ define "history" }}
+{{ template "base" . }}
+{{ block "title" . }}History{{ end }}
+
+{{ block "content" . }}
+<div class="d-flex justify-content-center mt-5">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title text-center">History</h2>
+            <ul class="list-group list-group-flush" id="historyList">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .file-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+    }
+
+    .file-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+
+    .file-hash {
+        font-size: 1rem;
+        font-family: monospace;
+        color: #555;
+    }
+
+    .delete-button {
+        margin-left: auto;
+        border-radius: 0.25rem;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+    }
+</style>
+
+<script>
+    function loadHistory() {
+        const fileList = JSON.parse(localStorage.getItem('fileList')) || [];
+        const historyList = document.getElementById('historyList');
+        historyList.innerHTML = '';
+
+        fileList.forEach(file => {
+            const li = document.createElement('li');
+            li.className = 'list-group-item';
+
+            const fileInfoDiv = document.createElement('div');
+            fileInfoDiv.className = 'file-info';
+
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.className = 'file-name';
+            fileNameSpan.textContent = file.filename;
+
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'btn btn-danger delete-button';
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteHistory(file.hash);
+
+            fileInfoDiv.appendChild(fileNameSpan);
+            fileInfoDiv.appendChild(deleteButton);
+
+            const hashSpan = document.createElement('span');
+            hashSpan.className = 'file-hash';
+            hashSpan.textContent = file.hash;
+
+            li.appendChild(fileInfoDiv);
+            li.appendChild(hashSpan);
+            historyList.appendChild(li);
+        });
+    }
+
+    function deleteHistory(hash) {
+        let fileList = JSON.parse(localStorage.getItem('fileList')) || [];
+        fileList = fileList.filter(item => item.hash !== hash);
+        localStorage.setItem('fileList', JSON.stringify(fileList));
+        loadHistory();
+    }
+
+    window.onload = loadHistory;
+</script>
+
+{{ end }}
+{{ end }}

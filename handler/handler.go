@@ -123,8 +123,9 @@ func UploadHandler(w http.ResponseWriter, r *http.Request, db *gorm.DB) {
 	}
 
 	data := map[string]interface{}{
-		"message": "File uploaded successfully, hash prefix: " + hashString[:8],
-		"hash":    hashString,
+		"message":  "File uploaded successfully, hash prefix: " + hashString[:8],
+		"hash":     hashString,
+		"filename": fileNameOriginal,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
